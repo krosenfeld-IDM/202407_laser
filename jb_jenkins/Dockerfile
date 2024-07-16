@@ -13,5 +13,5 @@ RUN dnf install -y \
     sudo
 
 RUN pip install pip --upgrade 
-RUN git clone -b jb_modulify --single-branch https://github.com/InstituteforDiseaseModeling/laser.git && cd laser/jb && pip install -e .
-RUN cd laser/jb/src/idmlaser && make update_ages.so
+RUN git clone https://github.com/krosenfeld-IDM/202407_laser.git && cd 202407_laser/jb_src && pip install -e .
+RUN cd 202407_laser/jb_src/src/idmlaser && make update_ages.so
