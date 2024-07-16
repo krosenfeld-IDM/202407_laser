@@ -10,8 +10,8 @@ if os.getenv( "INPUT_ROOT" ):
 
 #if not os.path.exists( os.path.join( input_root, "settings.py" ) ):
 #    raise ValueError( f"You will need to provide a settings.py file. If running for first time, use: python3 -m idmlaser.utils.build_template_workspace" )
-if not os.path.exists( os.path.join( input_root, "demographics_settings.py" ) ):
-    raise ValueError( f"You will need to provide a demographics_settings.py file. If running for first time, use: python3 -m idmlaser.utils.build_template_workspace" )
+# if not os.path.exists( os.path.join( input_root, "demographics_settings.py" ) ):
+#     raise ValueError( f"You will need to provide a demographics_settings.py file. If running for first time, use: python3 -m idmlaser.utils.build_template_workspace" )
 
 # Import a model
 from . import sir_numpy_c as model
