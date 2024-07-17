@@ -20,7 +20,6 @@
 
 #define SIMD_WIDTH 8     // AVX2 processes 8 integers at a time
 unsigned recovered_counter = 0;
-unsigned recovered_counter = 0;
 static std::mt19937 generator;
 static bool generator_initialized = false;
 

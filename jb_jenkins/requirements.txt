@@ -1,0 +1,3 @@
+PyWavelets
+statsmodels
+seaborn
