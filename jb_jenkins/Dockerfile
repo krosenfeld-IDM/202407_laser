@@ -1,5 +1,7 @@
 FROM rockylinux:9
 
+ENV INPUT_ROOT=Assets
+
 RUN dnf upgrade -y
 
 RUN dnf install -y \
