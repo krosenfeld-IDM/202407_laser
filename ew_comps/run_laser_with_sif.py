@@ -10,13 +10,25 @@ from idmtools.entities.templated_simulation import TemplatedSimulations
 from laser_task import PyConfiguredSingularityTask as PCST
 from idmtools_platform_comps.utils.scheduling import add_schedule_config
 
-def update_parameter_callback(simulation, incubation_duration, base_infectivity, seasonal_multiplier, migration_fraction):
+
+def update_parameter_callback(
+    simulation,
+    incubation_duration,
+    base_infectivity,
+    seasonal_multiplier,
+    migration_fraction,
+):
     simulation.task.set_parameter("incubation_duration", incubation_duration)
     simulation.task.set_parameter("base_infectivity", base_infectivity)
     simulation.task.set_parameter("seasonal_multiplier", seasonal_multiplier)
     simulation.task.set_parameter("migration_fraction", migration_fraction)
-    ret_tags_dict = {"incubation_duration": incubation_duration, "base_infectivity": base_infectivity, "seasonal_multiplier": seasonal_multiplier, "migration_fraction": migration_fraction }
-    return ret_tags_dict 
+    ret_tags_dict = {
+        "incubation_duration": incubation_duration,
+        "base_infectivity": base_infectivity,
+        "seasonal_multiplier": seasonal_multiplier,
+        "migration_fraction": migration_fraction,
+    }
+    return ret_tags_dict
 
 
 if __name__ == "__main__":
@@ -32,22 +44,29 @@ if __name__ == "__main__":
 
     # Add our image
     task.common_assets.add_assets(AssetCollection.from_id_file("laser.id"))
-    task.common_assets.add_directory('inputs')
-  
+    task.common_assets.add_directory("inputs")
+
     ts = TemplatedSimulations(base_task=task)
 
     sb = SimulationBuilder()
     sb.add_multiple_parameter_sweep_definition(
-            update_parameter_callback,
-            incubation_duration=[6,7,8],
-            base_infectivity=[3.9,4.0,4.1],
-            seasonal_multiplier=[0.55, 0.60, 0.65],
-            migration_fraction=[0.03, 0.04, 0.05]
-        )
-    
+        update_parameter_callback,
+        incubation_duration=[6, 7, 8],
+        base_infectivity=[3.9, 4.0, 4.1],
+        seasonal_multiplier=[0.55, 0.60, 0.65],
+        migration_fraction=[0.03, 0.04, 0.05],
+    )
+
     ts.add_builder(sb)
     num_threads = 24
-    add_schedule_config(ts, command=cmdline, NumNodes=1, num_cores=num_threads, node_group_name="idm_abcd", Environment={"OMP_NUM_THREADS":str(num_threads)} )
+    add_schedule_config(
+        ts,
+        command=cmdline,
+        NumNodes=1,
+        num_cores=num_threads,
+        node_group_name="idm_abcd",
+        Environment={"OMP_NUM_THREADS": str(num_threads)},
+    )
     experiment = Experiment.from_template(ts, name=os.path.split(sys.argv[0])[1])
     experiment.run(wait_until_done=True, scheduling=True)
     if experiment.succeeded:
