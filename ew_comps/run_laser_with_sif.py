@@ -35,16 +35,16 @@ if __name__ == "__main__":
     here = os.path.dirname(__file__)
 
     # Create a platform to run the workitem
-    platform = Platform("CALCULON")
+    platform = Platform("CALCULON", priority="Normal")
 
     # create commandline input for the task
-    cmdline = "singularity exec ./Assets/krosenfeld_idm_laser_0.0.4_0921047.sif python3 -m idmlaser.measles"
+    cmdline = "singularity exec ./Assets/krosenfeld_idm_laser_0.1.0_c4f4c89.sif python3 -m idmlaser.measles"
     command = CommandLine(cmdline)
     task = PCST(command=command)
 
     # Add our image
     task.common_assets.add_assets(AssetCollection.from_id_file("laser.id"))
-    task.common_assets.add_directory("inputs")
+    task.common_assets.add_directory("Assets")
 
     ts = TemplatedSimulations(base_task=task)
 
