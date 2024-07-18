@@ -3,8 +3,9 @@
 ## Local build
 Build the docker image for debugging
 ```
-docker build -t laser .
+docker build --no-cache -t laser .
 ```
+Note that the reason we need to build ignoring the cache is because we pull the code from GitHub.
 
 ## COMPS
 
