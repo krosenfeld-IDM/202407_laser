@@ -1,4 +1,10 @@
 # README
+
+Setup:
+```
+pip install -r requirements.txt --index-url https://packages.idmod.org/api/pypi/pypi-production/simple
+```
+
 Runing jb on comps
 
 Run a local build by:
