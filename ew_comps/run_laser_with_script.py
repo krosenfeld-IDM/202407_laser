@@ -1,9 +1,8 @@
 import os
 import sys
-from idmtools.assets import AssetCollection
+from idmtools.assets import AssetCollection, Asset
 from idmtools.core.platform_factory import Platform
 from idmtools.entities import CommandLine
-from idmtools.entities.command_task import CommandTask
 from idmtools.builders import SimulationBuilder
 from idmtools.entities.experiment import Experiment
 from idmtools.entities.templated_simulation import TemplatedSimulations
@@ -46,6 +45,9 @@ if __name__ == "__main__":
     # Add our image
     task.common_assets.add_assets(AssetCollection.from_id_file("laser.id"))
     task.common_assets.add_directory("Assets")
+
+    # Add analysis scripts
+    task.transient_assets.add_or_replace_asset(Asset(filename="analyze_waves.py"))
 
     ts = TemplatedSimulations(base_task=task)
 
