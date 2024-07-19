@@ -22,7 +22,7 @@ class PyConfiguredSingularityTask(CommandTask):
         self.script_name = script_name
         self.script = self._load_script(script_name)
         self.config = dict()
-        # self.base_settings = self._load_settings("settings.py")        
+        self.base_settings = self._load_settings("settings.py")        
         CommandTask.__init__(self, command)
 
 
@@ -96,7 +96,7 @@ class PyConfiguredSingularityTask(CommandTask):
         Returns:
             AssetCollection: Transient assets.
         """
-        # self.transient_assets.add_or_replace_asset(Asset(filename="settings.py", content=self._process_settings()))
+        self.transient_assets.add_or_replace_asset(Asset(filename="settings.py", content=self._process_settings()))
         self.transient_assets.add_or_replace_asset(Asset(filename=self.script_name))
         return CommandTask.gather_transient_assets(self)    
    

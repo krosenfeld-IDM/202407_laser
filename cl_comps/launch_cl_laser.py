@@ -30,7 +30,7 @@ if __name__ == "__main__":
     here = os.path.dirname(__file__)
 
     # Create a platform to run the workitem
-    platform = Platform("CALCULON", priority="Normal")
+    platform = Platform("CALCULON", priority="Normal", node_group='idm_48cores')
 
     # create commandline input for the task
     cmdline = "singularity exec ./Assets/krosenfeld_cl_idm_laser_0.0.1_07e7a44.sif bash run.sh"
@@ -57,13 +57,13 @@ if __name__ == "__main__":
     )
 
     ts.add_builder(sb)
-    num_threads = 4
+    num_threads = 8
     add_schedule_config(
         ts,
         command=cmdline,
         NumNodes=1,
         num_cores=num_threads,
-        node_group_name="idm_abcd",
+        node_group_name="idm_48cores",
         Environment={"OMP_NUM_THREADS": str(num_threads)},
     )
     experiment = Experiment.from_template(ts, name=os.path.split(sys.argv[0])[1])

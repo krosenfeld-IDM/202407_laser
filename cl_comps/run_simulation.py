@@ -10,11 +10,12 @@ input_root="."
 if os.getenv( "INPUT_ROOT" ):
     input_root=os.getenv( "INPUT_ROOT" )
     sys.path.append( input_root )
+# sys.path.append("./Assets")
 
 from idmlaser.utils import PropertySet
 
 # match the pattern from jb
-import settings
+# import settings
 
 if __name__ == "__main__":
 
@@ -36,7 +37,8 @@ if __name__ == "__main__":
     model_params.inf_mean = np.float32(7.0)
     model_params.inf_std = np.float32(1.0)
     model_params.r_naught = np.float32(14.0)
-    model_params.seasonality_factor = np.float32(settings.seasonality_factor) # np.float32(0.1)
+    model_params.seasonality_factor = np.float32(0.1)
+    # model_params.seasonality_factor = np.float32(settings.seasonality_factor) # np.float32(0.1)
     model_params.seasonality_offset = np.int32(182.5)
 
     model_params.beta = model_params.r_naught / model_params.inf_mean
