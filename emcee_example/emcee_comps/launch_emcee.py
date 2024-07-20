@@ -21,7 +21,7 @@ from idmtools_platform_comps.utils.scheduling import add_schedule_config
 # use for parallel execution on COMPS
 @dataclass
 class COMPSPool:
-    step: int = 0
+    step: int = -1
 
     def map(self, func, p):
         results = self.launch(p)  # p is a nwalker x ndim array
@@ -29,8 +29,8 @@ class COMPSPool:
         return iter(results)
 
     def launch(self, p):
-        return launch_COMPS(p, step=self.step)
         self.step += 1
+        return launch_COMPS(p, step=self.step)
 
 
 @dataclass
@@ -59,11 +59,11 @@ class ParamCommandTask(CommandTask):
         return CommandTask.gather_transient_assets(self)
 
 
-def update_parameter_callback(simulation, iteration):
+def update_parameter_callback(simulation, walker):
     """This function updates the parmeter values for each individual simulation."""
-    simulation.task.set_parameter("iteration", iteration)
+    simulation.task.set_parameter("walker", walker)
 
-    ret_tags_dict = {"iteration": iteration}
+    ret_tags_dict = {"walker": walker}
     return ret_tags_dict
 
 
@@ -98,7 +98,7 @@ def launch_COMPS(p, step=0):
         sb = SimulationBuilder()
         sb.add_multiple_parameter_sweep_definition(
             update_parameter_callback,
-            iteration=np.arange(nwalkers).tolist(),
+            walkder=np.arange(nwalkers).tolist(),
         )
         ts.add_builder(sb)
         num_threads = 1
@@ -174,7 +174,7 @@ if __name__ == "__main__":
         pool=COMPSPool(),
     )
 
-    max_n = 2
+    max_n = 3
 
     # We'll track how the average autocorrelation time estimate changes
     index = 0
