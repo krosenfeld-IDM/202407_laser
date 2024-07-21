@@ -64,7 +64,7 @@ if __name__ == "__main__":
         NumNodes=1,
         num_cores=num_threads,
         node_group_name="idm_48cores",
-        Environment={"OMP_NUM_THREADS": str(num_threads)},
+        Environment={"NUMBA_NUM_THREADS": str(num_threads)},
     )
     experiment = Experiment.from_template(ts, name=os.path.split(sys.argv[0])[1])
     experiment.run(wait_until_done=True, scheduling=True)
