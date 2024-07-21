@@ -1,6 +1,10 @@
 # 202407_laser
 Repository for July presentation
 
+```
+pip install -r requirements.txt --index-url=https://packages.idmod.org/api/pypi/pypi-production/simple
+
+```
 ## References
 - https://github.com/InstituteforDiseaseModeling/MobyJenkins
 - https://github.com/InstituteforDiseaseModeling/laser/wiki/Running-on-COMPS
