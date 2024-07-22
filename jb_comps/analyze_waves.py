@@ -147,7 +147,7 @@ if __name__ == "__main__":
 
     # save result_dict to json
     import json
-    with open('result.json', 'w') as f:
+    with open('result_waves.json', 'w') as f:
         json.dump(result_dict, f, indent=4)
 
 
