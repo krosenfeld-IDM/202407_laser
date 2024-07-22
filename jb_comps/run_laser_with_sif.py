@@ -39,6 +39,7 @@ if __name__ == "__main__":
 
     # create commandline input for the task
     cmdline = "singularity exec ./Assets/krosenfeld_idm_laser_0.1.0_c4f4c89.sif python3 -m idmlaser.measles"
+
     command = CommandLine(cmdline)
     task = PCST(command=command)
 
