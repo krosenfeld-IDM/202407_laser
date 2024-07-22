@@ -5,7 +5,7 @@ report_filename="simulation_output.csv"
 # simulation duration
 #duration = 10*365
 incubation_duration = 14
-duration = 10*365
+duration = 15*365
 report_start= 365*4
 base_infectivity = 1.48 # 4.42
 

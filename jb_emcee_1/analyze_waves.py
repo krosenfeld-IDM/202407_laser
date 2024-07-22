@@ -119,8 +119,7 @@ if __name__ == "__main__":
         X = sm.add_constant(x[:, np.newaxis])
         model = sm.OLS(y, X)
         results = model.fit()
-        return results.params[1], results.bse[1]
-
+        return results.params, results.bse
 
     result_dict = dict()
 
@@ -132,8 +131,16 @@ if __name__ == "__main__":
     ax0.set_xlabel("Distance from London (km)")
     ax0.set_ylabel("Phase diff from London")
 
-    m,me = estimate_slope(london_x, 180/np.pi*london_y)
-    result_dict['London'] = (m,me)
+    ind = np.isfinite(london_y)
+    london_x = london_x[ind]
+    london_y = london_y[ind]
+    if ind.sum() > 2:
+        p,pe = estimate_slope(london_x, 180/np.pi*london_y)
+    else:
+        p = [-np.inf, -np.inf]
+        pe = [np.inf, np.inf]
+    result_dict['London_m'] = (p[1],pe[1])
+    result_dict['London_b'] = (p[0],pe[0])
 
     ax1 = plt.subplot(gs[1])
     sns.regplot(x=manchester_x, y=180/np.pi*manchester_y, ax=ax1)
@@ -141,9 +148,16 @@ if __name__ == "__main__":
     ax1.set_ylabel("Phase diff from Manchester")
     plt.savefig("phase_diff.png")
 
-    m,me = estimate_slope(manchester_x, 180/np.pi*manchester_y)
-
-    result_dict['Manchester'] = (m,me)
+    ind = np.isfinite(manchester_y)
+    manchester_x = manchester_x[ind]
+    manchester_y = manchester_y[ind]
+    if ind.sum() > 2:
+        p,pe = estimate_slope(manchester_x, 180/np.pi*manchester_y)
+    else:
+        p = [-np.inf, -np.inf]
+        pe = [np.inf, np.inf]
+    result_dict['Manchester_m'] = (p[1],pe[1])
+    result_dict['Manchester_b'] = (p[0],pe[0])
 
     # save result_dict to json
     import json

@@ -23,9 +23,18 @@ from idmtools_platform_comps.utils.scheduling import add_schedule_config
 class COMPSPool:
     step: int = -1
 
+    def check_limits(self, params):
+        """Add boundaries"""
+        blim = [0, 0]
+        ulim = [0, np.inf]
+        return np.all(np.greater(params, blim)) and np.all(np.less(params, ulim))
+
     def map(self, func, p):
         results = self.launch(p)  # p is a nwalker x ndim array
         # results is a list of nwalker elements
+        for i, params in enumerate(p):
+            if not self.check_limits(params):
+                results[i] = -np.inf
         return iter(results)
 
     def launch(self, p):
@@ -115,7 +124,7 @@ def launch_COMPS(p, step=0):
         json.dump({str(i): p[i].tolist() for i in range(nwalkers)}, f)
 
     # Create a platform to run the workitem
-    with Platform("CALCULON", priority="Normal") as platform:
+    with Platform("CALCULON", priority="Highest") as platform:
         # create commandline input for the task
         cmdline = (
             "singularity exec ./Assets/krosenfeld_idm_laser_0.1.0_c4f4c89.sif bash run.sh"
@@ -143,13 +152,13 @@ def launch_COMPS(p, step=0):
             walker=np.arange(nwalkers).tolist(),
         )
         ts.add_builder(sb)
-        num_threads = 10
+        num_threads = 2
         add_schedule_config(
             ts,
             command=cmdline,
             NumNodes=1,
             num_cores=num_threads,
-            node_group_name="idm_abcd",
+            node_group_name="idm_48cores",
             Environment={"OMP_NUM_THREADS": str(num_threads)},
         )
         experiment = Experiment.from_template(ts, name=f"emcee_jb_1_{step}")
@@ -185,8 +194,8 @@ if __name__ == "__main__":
     # number of dimensions to the problem
     ndim = 2 # migration_fraction, base_infectivity
 
-    nwalkers = 64
-    p0 = np.random.rand(nwalkers, ndim)
+    nwalkers = 24
+    p0 = np.random.rand(nwalkers, ndim) + np.array([0, 1.5])[np.newaxis, :]
 
     # Set up the backend
     # Don't forget to clear it in case the file already exists
@@ -202,7 +211,7 @@ if __name__ == "__main__":
         pool=COMPSPool(),
     )
 
-    max_n = 6
+    max_n = 10
 
     # We'll track how the average autocorrelation time estimate changes
     index = 0
