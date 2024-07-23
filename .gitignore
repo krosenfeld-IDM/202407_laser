@@ -162,3 +162,7 @@ cython_debug/
 #.idea/
 
 output_emcee/
+
+# Files
+data_brick.json
+*.h5
