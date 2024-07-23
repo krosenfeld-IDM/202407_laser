@@ -23,9 +23,19 @@ from idmtools_platform_comps.utils.scheduling import add_schedule_config
 class COMPSPool:
     step: int = -1
 
+    def check_limits(self, params):
+        """Add boundaries"""
+        blim = 5*[-1]
+        ulim = 5*[2]
+        return np.all(np.greater(params, blim)) and np.all(np.less(params, ulim))
+
+
     def map(self, func, p):
         results = self.launch(p)  # p is a nwalker x ndim array
         # results is a list of nwalker elements
+        for i, params in enumerate(p):
+            if not self.check_limits(params):
+                results[i] = -np.inf
         return iter(results)
 
     def launch(self, p):
@@ -98,7 +108,7 @@ def launch_COMPS(p, step=0):
         sb = SimulationBuilder()
         sb.add_multiple_parameter_sweep_definition(
             update_parameter_callback,
-            walkder=np.arange(nwalkers).tolist(),
+            walker=np.arange(nwalkers).tolist(),
         )
         ts.add_builder(sb)
         num_threads = 1
@@ -129,10 +139,9 @@ def launch_COMPS(p, step=0):
     ) as file:
         data_dict = json.load(file)
 
-    ind = np.array([int(k["iteration"]) for k in data_dict.values()])
-    ind = np.sort(ind)
-    print(ind)
-    result = np.array([data_dict[k]["result"] for k in data_dict.keys()])
+    ind = np.array([int(k["walker"]) for k in data_dict.values()])
+    ind = np.argsort(ind)
+    result = np.array([data_dict[k]["result"] for k in data_dict.keys()])[ind]
     return result.tolist()
 
 
@@ -156,7 +165,7 @@ if __name__ == "__main__":
     # write cov as .np file
     np.save("Assets/cov.npy", cov)
 
-    nwalkers = 256
+    nwalkers = 128
     p0 = np.random.rand(nwalkers, ndim)
 
     # Set up the backend
@@ -174,7 +183,7 @@ if __name__ == "__main__":
         pool=COMPSPool(),
     )
 
-    max_n = 3
+    max_n = 50
 
     # We'll track how the average autocorrelation time estimate changes
     index = 0
@@ -189,7 +198,7 @@ if __name__ == "__main__":
     # Now we'll sample for up to max_n steps
     for sample in sampler.sample(p0, iterations=max_n, progress=True):
         # Only check convergence every 100 steps
-        if sampler.iteration % 100:
+        if sampler.iteration % 1:
             continue
 
         # Compute the autocorrelation time so far

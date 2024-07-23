@@ -152,13 +152,13 @@ def launch_COMPS(p, step=0):
             walker=np.arange(nwalkers).tolist(),
         )
         ts.add_builder(sb)
-        num_threads = 2
+        num_threads = 12
         add_schedule_config(
             ts,
             command=cmdline,
             NumNodes=1,
             num_cores=num_threads,
-            node_group_name="idm_48cores",
+            node_group_name="idm_cd",
             Environment={"OMP_NUM_THREADS": str(num_threads)},
         )
         experiment = Experiment.from_template(ts, name=f"emcee_jb_1_{step}")
@@ -194,7 +194,7 @@ if __name__ == "__main__":
     # number of dimensions to the problem
     ndim = 2 # migration_fraction, base_infectivity
 
-    nwalkers = 24
+    nwalkers = 64
     p0 = np.random.rand(nwalkers, ndim) + np.array([0, 1.5])[np.newaxis, :]
 
     # Set up the backend

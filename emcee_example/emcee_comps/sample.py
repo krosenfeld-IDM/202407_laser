@@ -13,7 +13,7 @@ if __name__ == "__main__":
     # load iteraion.json
     with open("iteration.json", "r") as file:
         iteration_dict = json.load(file)
-    iteration = iteration_dict['iteration']
+    iteration = iteration_dict['walker']
     print(f"iteration: {iteration}")
 
     with open("parameters.json", "r") as file:

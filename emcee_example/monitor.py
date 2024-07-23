@@ -25,7 +25,7 @@ if __name__ == "__main__":
     cov += cov.T - np.diag(cov.diagonal())
     cov = np.dot(cov, cov)
 
-    nwalkers = 32
+    nwalkers = 128
     p0 = np.random.rand(nwalkers, ndim)
 
     # Set up the backend
@@ -38,7 +38,7 @@ if __name__ == "__main__":
         nwalkers, ndim, log_prob, args=[means, cov], backend=backend
     )
 
-    max_n = 100
+    max_n = 50
 
     # We'll track how the average autocorrelation time estimate changes
     index = 0
@@ -46,9 +46,9 @@ if __name__ == "__main__":
 
     # This will be useful to testing convergence
     old_tau = np.inf
-
-    state = sampler.run_mcmc(p0, 100)
-    sampler.reset()
+# 
+    # state = sampler.run_mcmc(p0, 100)
+    # sampler.reset()
 
     # Now we'll sample for up to max_n steps
     for sample in sampler.sample(p0, iterations=max_n, progress=True):
@@ -72,15 +72,15 @@ if __name__ == "__main__":
         old_tau = tau
         
 
-    n = 100 * np.arange(1, index + 1)
-    y = autocorr[:index]
-    plt.plot(n, n / 100.0, "--k")
-    plt.plot(n, y)
-    plt.xlim(0, n.max())
-    plt.ylim(0, y.max() + 0.1 * (y.max() - y.min()))
-    plt.xlabel("number of steps")
-    plt.ylabel(r"mean $\hat{\tau}$")
-    plt.savefig('monitor_tau.png')
+    # n = 100 * np.arange(1, index + 1)
+    # y = autocorr[:index]
+    # plt.plot(n, n / 100.0, "--k")
+    # plt.plot(n, y)
+    # plt.xlim(0, n.max())
+    # plt.ylim(0, y.max() + 0.1 * (y.max() - y.min()))
+    # plt.xlabel("number of steps")
+    # plt.ylabel(r"mean $\hat{\tau}$")
+    # plt.savefig('monitor_tau.png')
     
     samples = sampler.get_chain(flat=True)
 
