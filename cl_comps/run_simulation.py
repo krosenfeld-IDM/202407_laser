@@ -9,9 +9,8 @@ import sys
 input_root="."
 if os.getenv( "INPUT_ROOT" ):
     input_root=os.getenv( "INPUT_ROOT" )
-    sys.path.append( input_root )
-sys.path.append("./Assets")
-sys.path.append(str(Path.cwd()))
+sys.path.append( input_root )
+sys.path.append(str(Path.cwd())) # transient and common assets get shuffled around for some reason
 
 from idmlaser.utils import PropertySet
 
@@ -20,18 +19,9 @@ import settings
 
 if __name__ == "__main__":
 
-    # prount out the contents of the working directory
-    print("Working directory:", Path.cwd())
-    print("Contents of working directory:")
-    for item in Path.cwd().iterdir():
-        print(item)
-
-    # print out the root directory of this file
-    print("Root directory of this file:", Path(__file__).resolve().parent)
-
     meta_params = PropertySet()
-    meta_params.ticks = 365 * 5
-    meta_params.nodes = 1
+    meta_params.ticks = 365 * 20
+    meta_params.nodes = 0
     meta_params.seed = 20240612
     meta_params.output = Path.cwd() / "outputs"
 
@@ -54,9 +44,9 @@ if __name__ == "__main__":
     net_params = PropertySet()
     net_params.a = np.float32(1.0)   # pop1 power
     net_params.b = np.float32(1.0)   # pop2 power
-    net_params.c = np.float32(2.0)   # distance power
-    net_params.k = np.float32(500.0) # scaling factor
-    net_params.max_frac = np.float32(0.05) # max fraction of population that can migrate
+    net_params.c = np.float32(settings.network_c) #np.float32(2.0)   # distance power
+    net_params.k = np.float32(settings.network_k) # np.float32(500.0) # scaling factor
+    net_params.max_frac = np.float32(settings.network_max_frac) # np.float32(0.05) # max fraction of population that can migrate
 
     from scenario_engwal import initialize_engwal  # noqa: E402, I001
     params = PropertySet(meta_params, model_params, net_params)
