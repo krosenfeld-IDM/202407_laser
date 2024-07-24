@@ -60,7 +60,7 @@ if __name__ == "__main__":
         num_cores=num_threads,
         node_group_name="idm_48cores",
         Environment={"NUMBA_NUM_THREADS": str(num_threads),
-                     "PYTHONPATH": "."},
+                     "PYTHONPATH": ".:./Assets"},
     )
     experiment = Experiment.from_template(ts, name=os.path.split(sys.argv[0])[1])
     experiment.run(wait_until_done=True, scheduling=True)

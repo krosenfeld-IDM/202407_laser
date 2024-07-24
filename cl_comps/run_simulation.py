@@ -6,10 +6,10 @@ import numpy as np
 import os
 import sys
 
-input_root="."
-if os.getenv( "INPUT_ROOT" ):
-    input_root=os.getenv( "INPUT_ROOT" )
-sys.path.append( input_root )
+# input_root="."
+# if os.getenv( "INPUT_ROOT" ):
+#     input_root=os.getenv( "INPUT_ROOT" )
+# sys.path.append( input_root )
 
 from idmlaser.utils import PropertySet
 
