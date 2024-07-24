@@ -11,34 +11,19 @@ from script_task import PyConfiguredSingularityTask as PCST
 from idmtools_platform_comps.utils.scheduling import add_schedule_config
 
 
-def update_parameter_callback(
-    simulation,
-    base_infectivity,
-    seasonal_multiplier,
-    migration_fraction,
-    iteration
-):
-    simulation.task.set_parameter("base_infectivity", base_infectivity)
-    simulation.task.set_parameter("seasonal_multiplier", seasonal_multiplier)
-    simulation.task.set_parameter("migration_fraction", migration_fraction)
-
-    ret_tags_dict = {
-        "base_infectivity": base_infectivity,
-        "seasonal_multiplier": seasonal_multiplier,
-        "migration_fraction": migration_fraction,
-        "iteration": iteration
-    }
-    return ret_tags_dict
-
+def update_parameter_callback(simulation, **kwargs):
+    for k,v in kwargs.items():
+        simulation.task.set_parameter(k, v)
+    return kwargs
 
 if __name__ == "__main__":
     here = os.path.dirname(__file__)
 
     # Create a platform to run the workitem
-    platform = Platform("CALCULON", priority="Normal", node_group = 'idm_abcd')
+    platform = Platform("CALCULON", priority="Normal")
 
     # create commandline input for the task
-    cmdline = "singularity exec ./Assets/krosenfeld_idm_laser_0.1.0_c4f4c89.sif bash run.sh"
+    cmdline = "singularity exec ./Assets/krosenfeld_idm_jb_laser_0.1.3.pythonpath_03aef2b.sif bash run.sh"
 
     command = CommandLine(cmdline)
     task = PCST(command=command)
@@ -55,19 +40,10 @@ if __name__ == "__main__":
 
     sb = SimulationBuilder()
     sb.add_multiple_parameter_sweep_definition(
-        update_parameter_callback,
-        base_infectivity=[3.9, 4.0, 4.1],
-        seasonal_multiplier=[0.55, 0.60, 0.65],
-        migration_fraction=[0.004, 0.01, 0.04, 0.1],
-        iteration=np.arange(20).tolist(),
+        lambda simulation, iteration: update_parameter_callback(simulation, iteration=iteration),
+        iteration=np.arange(2).tolist()
     )
-    # sb.add_multiple_parameter_sweep_definition(
-    #     update_parameter_callback,
-    #     base_infectivity=[4.0],
-    #     seasonal_multiplier=[0.6],
-    #     migration_fraction=[0.04],
-    #     iteration=np.arange(2).tolist(),
-    # )
+
     ts.add_builder(sb)
     num_threads = 24
     add_schedule_config(
@@ -76,7 +52,8 @@ if __name__ == "__main__":
         NumNodes=1,
         num_cores=num_threads,
         node_group_name="idm_abcd",
-        Environment={"OMP_NUM_THREADS": str(num_threads)},
+        Environment={"OMP_NUM_THREADS": str(num_threads),
+                     "PYTHONPATH": ".:./Assets"},
     )
     experiment = Experiment.from_template(ts, name=os.path.split(sys.argv[0])[1])
     experiment.run(wait_until_done=True, scheduling=True)
