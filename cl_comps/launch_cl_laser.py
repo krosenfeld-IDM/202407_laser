@@ -1,6 +1,7 @@
 import os
 import sys
 import numpy as np
+from functools import partial
 from idmtools.assets import AssetCollection, Asset
 from idmtools.core.platform_factory import Platform
 from idmtools.entities import CommandLine
@@ -11,36 +12,19 @@ from script_task import PyConfiguredSingularityTask as PCST
 from idmtools_platform_comps.utils.scheduling import add_schedule_config
 
 
-def update_parameter_callback(
-    simulation,
-    seasonality_factor,
-    network_k,
-    network_c,
-    network_max_frac,
-    iteration
-):
-    simulation.task.set_parameter("seasonality_factor", seasonality_factor)
-    simulation.task.set_parameter("network_k", network_k)
-    simulation.task.set_parameter("network_c", network_c)
-    simulation.task.set_parameter("network_max_frac", network_max_frac)
-    # simulation.task.set_parameter("seasonal_multiplier", seasonal_multiplier)
-    # simulation.task.set_parameter("migration_fraction", migration_fraction)
-
-    ret_tags_dict = {
-        "seasonality_factor": seasonality_factor,
-        "network_k": network_k,
-        "network_c": network_c,
-        "network_max_frac": network_max_frac,
-        "iteration": iteration
-    }
-    return ret_tags_dict
-
+def update_parameter_callback(simulation, **kwargs):
+    for k,v in kwargs.items():
+        simulation.task.set_parameter(k, v)
+    return kwargs
+    # simulation.task.set_parameter("iteration", iteration)
+    # return {"iteration": iteration}
 
 if __name__ == "__main__":
     here = os.path.dirname(__file__)
+    os.chdir(here)
 
     # Create a platform to run the workitem
-    platform = Platform("CALCULON", priority="Highest")
+    platform = Platform("CALCULON", priority="Normal")
 
     # create commandline input for the task
     cmdline = "singularity exec ./Assets/krosenfeld_cl_idm_laser_0.0.1_07e7a44.sif bash run.sh"
@@ -63,12 +47,8 @@ if __name__ == "__main__":
 
     sb = SimulationBuilder()
     sb.add_multiple_parameter_sweep_definition(
-        update_parameter_callback,
-        seasonality_factor=[0.1,0.2,0.3],
-        network_k=[50, 100, 500, 1000],
-        network_c=[1.9,2.0,2.1],
-        network_max_frac=[0.005,0.01,0.05],
-        iteration=np.arange(5).tolist(),
+        lambda simulation, iteration: update_parameter_callback(simulation, iteration=iteration),
+        iteration=np.arange(2).tolist()
     )
 
     ts.add_builder(sb)
@@ -78,8 +58,9 @@ if __name__ == "__main__":
         command=cmdline,
         NumNodes=1,
         num_cores=num_threads,
-        node_group_name="idm_abcd",
-        Environment={"NUMBA_NUM_THREADS": str(num_threads)},
+        node_group_name="idm_48cores",
+        Environment={"NUMBA_NUM_THREADS": str(num_threads),
+                     "PYTHONPATH": "."},
     )
     experiment = Experiment.from_template(ts, name=os.path.split(sys.argv[0])[1])
     experiment.run(wait_until_done=True, scheduling=True)
