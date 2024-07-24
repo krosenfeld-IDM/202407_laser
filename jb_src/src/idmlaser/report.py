@@ -4,6 +4,8 @@ import socket
 from sparklines import sparklines
 import time
 import os
+
+# Needs to by in PYTHONPATH
 import settings
 import demographics_settings
 

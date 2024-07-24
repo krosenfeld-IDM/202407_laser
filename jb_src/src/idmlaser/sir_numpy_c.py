@@ -9,11 +9,13 @@ import gzip
 import time
 import os
 
-import settings
-import demographics_settings
 from . import report
 from .model_numpy import eula
 from . import sir_numpy
+
+# These need to be in PYTHONPATH
+import settings
+import demographics_settings
 
 unborn_end_idx = 0
 ninemo_tracker_idx = None
