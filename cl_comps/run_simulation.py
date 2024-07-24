@@ -10,7 +10,6 @@ input_root="."
 if os.getenv( "INPUT_ROOT" ):
     input_root=os.getenv( "INPUT_ROOT" )
 sys.path.append( input_root )
-sys.path.append(str(Path.cwd())) # transient and common assets get shuffled around for some reason
 
 from idmlaser.utils import PropertySet
 
@@ -48,7 +47,7 @@ if __name__ == "__main__":
     net_params.k = np.float32(settings.network_k) # np.float32(500.0) # scaling factor
     net_params.max_frac = np.float32(settings.network_max_frac) # np.float32(0.05) # max fraction of population that can migrate
 
-    from scenario_engwal import initialize_engwal  # noqa: E402, I001
+    from Assets.scenario_engwal import initialize_engwal  # noqa: E402, I001
     params = PropertySet(meta_params, model_params, net_params)
     max_capacity, demographics, initial, network = initialize_engwal(None, params, params.nodes)    # doesn't need a model, yet
 
